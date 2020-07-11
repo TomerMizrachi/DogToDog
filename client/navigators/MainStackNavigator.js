@@ -11,7 +11,7 @@ export function MainStackNavigator() {
                 // headerShown: false,
                 animationEnabled: false
             }}>
-            <MainStack.Screen name={"Swipe for your next friend"} component={Home} />
+            <MainStack.Screen name={"Your next friend"} component={Home} />
         </MainStack.Navigator>
     );
 }

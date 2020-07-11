@@ -18,6 +18,11 @@ export function rootReducer() {
                     ...state,
                     user: undefined
                 };
+            case 'SET_DETAILS':
+                return {
+                    ...state,
+                    userDetails: action.payload,
+                };
             case 'SET_LOADING':
                 return {
                     ...state,
@@ -33,6 +38,7 @@ export function rootReducer() {
         }
     }, {
         user: undefined,
+        userDetails: undefined,
         loading: true,
         usersList: []
     });
@@ -89,6 +95,8 @@ export function rootReducer() {
                         Authorization: `bearer ${user.token}`,
                     },
                 }).then(({ data }) => {
+                    userDetails = data.filter(d => d.email === JSON.parse(user).email);
+                    dispatch(createAction('SET_DETAILS', userDetails[0]));
                     data = data.filter(d => d.email !== JSON.parse(user).email);
                     dispatch(createAction('SET_USERS', data));
                 });
