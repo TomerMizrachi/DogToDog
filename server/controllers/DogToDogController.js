@@ -136,16 +136,21 @@ class DogToDogController {
             if (obj.length == 0) throw { msg: "error" };
             obj = obj[0];
 
-            console.log(req.body);
+            console.log(obj, req.body);
 
-            if (req.body._id) obj._id = req.body._id;
-            if (req.body.email) obj.email = req.body.email;
-            if (req.body.password) obj.password = req.body.password;
-            if (req.body.breed) obj.breed = req.body.breed;
-            if (req.body.age) obj.age = req.body.age;
-            // if (req.file.path) obj.image = req.file.path;
-
-            let data = await DogToDog.updateOne({ email: req.params.email }, obj, err => {
+            // if (req.body._id) obj._id = req.body._id;
+            // if (req.body.email) obj.email = req.body.email;
+            // if (req.body.password) obj.password = req.body.password;
+            // if (req.body.breed) obj.breed = req.body.breed;
+            // if (req.body.age) obj.age = req.body.age;
+            // if (req.body.image) obj.image = req.body.image;
+            if (req.body.likedUsers && req.body.dislikedUsers) {
+                obj = { $addToSet: { "dislikedUsers": req.body.dislikedUsers, "likedUsers": req.body.likedUsers } };
+            }
+            if (req.body.likedBy) {
+                obj = { $addToSet: { "likedBy" : req.body.likedBy } };
+            }
+            await DogToDog.updateOne({ email: req.params.email }, obj, err => {
                 if (err) throw err;
             });
             res.status(200).send("updated");

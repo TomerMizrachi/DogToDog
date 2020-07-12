@@ -24,10 +24,10 @@ const usersSchema = new Schema({
     breed: String,
     age: Number,
     image: String,
-    likedUsers: [Number],
-    superLikedUsers: [Number],
-    dislikedUsers: [Number],
-    likedBy: [Number]
+    likedUsers: [],
+    superLikedUsers: [],
+    dislikedUsers: [],
+    likedBy: []
 });
 
 const Users = model("Users", usersSchema);

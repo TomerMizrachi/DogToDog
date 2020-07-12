@@ -1,5 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, Platform, TouchableOpacity } from 'react-native';
+import axios from 'axios';
+import { BASE_URL } from '../config/index';
 import Swiper from 'react-native-deck-swiper';
 import { Card, CardDetails } from './Card';
 import { IconButton } from './IconButton';
@@ -19,19 +21,38 @@ export default function Home({ navigation }) {
     const onSwipedLeft = () => {
         if (state.usersList[index]) {
             state.userDetails.dislikedUsers[state.userDetails.dislikedUsers.length] = state.usersList[index]._id;
-            console.log("dislike")
         }
-
-        // console.log(state.usersList,index);
-        // state.usersList.splice(index,1);
-        // setIndex(index - 1);
-        // console.log(state.usersList,index);
     }
-    const onSwipedRight = () => {
-        state.userDetails.likedUsers[state.userDetails.likedUsers.length] = state.usersList[index]._id;
+    const onSwipedRight = async () => {
+        if (state.usersList[index]) {
+            state.userDetails.likedUsers[state.userDetails.likedUsers.length] = state.usersList[index]._id;
+            state.usersList[index].likedBy[state.usersList[index].likedBy.length] = state.userDetails._id;
+            await updateLikes(state.usersList[index].email, state.usersList[index].likedBy);
+        }
     }
-    const favorits = () => {
-
+    const matches = async () => {
+        try {
+            await updateLikes(state.userDetails.email, state.userDetails.likedUsers, state.userDetails.dislikedUsers);
+            navigation.navigate('Your Matches');
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    const updateLikes = async (email, liked, dislike) => {
+        try {
+            if (dislike) {
+                await axios.put(`${BASE_URL}/api/update/${email}`, {
+                    likedUsers: liked,
+                    dislikedUsers: dislike,
+                });
+            } else if (!dislike) {
+                await axios.put(`${BASE_URL}/api/update/${email}`, {
+                    likedBy: liked,
+                });
+            }
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     React.useEffect(() => {
@@ -108,7 +129,8 @@ export default function Home({ navigation }) {
                 </View>
                 <View style={styles.bottomContainer}>
                     <CardDetails data={state.usersList} index={index} />
-                    <TouchableOpacity style={styles.button} onPress={favorits()}>
+                    <TouchableOpacity style={styles.button}
+                        onPress={matches}>
                         <Text style={styles.btntext}>Your Matches</Text>
                     </TouchableOpacity>
                 </View>
@@ -118,9 +140,15 @@ export default function Home({ navigation }) {
     } else {
         return (
             <View style={styles.container}>
-                <View style={styles.Bcontainer}>
-                    {index >= state.usersList.length && state.usersList[0] !== undefined ? (<Text style={styles.text}>We have no more friens for you please come back later</Text>) : (<View></View>)}
-                </View>
+                {index >= state.usersList.length && state.usersList[0] !== undefined ? (
+                    <View style={styles.Bcontainer}>
+                        <Text style={styles.text}>We have no more friens for you please come back later</Text>
+                        <TouchableOpacity style={styles.button}
+                            onPress={matches}>
+                            <Text style={styles.btntext}>Your Matches</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : (<View></View>)}
             </View>
         )
     }
