@@ -28,7 +28,7 @@ export default function Matches({ navigation }) {
 
     return (
         <View style={styles.container}>
-            
+            <Text></Text>
         </View>
     )
 }
