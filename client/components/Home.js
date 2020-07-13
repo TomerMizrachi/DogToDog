@@ -14,7 +14,19 @@ export default function Home({ navigation }) {
     const { logout } = React.useContext(AuthContext);
     const state = React.useContext(UserContext);
     rootReducer();
-
+    const matches = () => {
+        const likedarr = state.userDetails.likedUsers;
+        const users = state.usersList;
+        let matchUsers = [];
+        likedarr.forEach(likedId => {
+            users.forEach(user => {
+                if (user._id === likedId) {
+                    matchUsers[matchUsers.length] = user;
+                }
+            });
+        });
+        state.matches = matchUsers;
+    };
     const onSwiped = () => {
         setIndex((index + 1));
     }
@@ -30,9 +42,10 @@ export default function Home({ navigation }) {
             await updateLikes(state.usersList[index].email, state.usersList[index].likedBy);
         }
     }
-    const matches = async () => {
+    const matchesDB = async () => {
         try {
             await updateLikes(state.userDetails.email, state.userDetails.likedUsers, state.userDetails.dislikedUsers);
+            matches(); 
             navigation.navigate('Your Matches');
         } catch (e) {
             console.log(e)
@@ -130,7 +143,7 @@ export default function Home({ navigation }) {
                 <View style={styles.bottomContainer}>
                     <CardDetails data={state.usersList} index={index} />
                     <TouchableOpacity style={styles.button}
-                        onPress={matches}>
+                        onPress={matchesDB}>
                         <Text style={styles.btntext}>Your Matches</Text>
                     </TouchableOpacity>
                 </View>

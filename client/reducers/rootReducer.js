@@ -49,19 +49,6 @@ export function rootReducer() {
         usersList: []
     });
 
-    const matches = () => {
-        const likedarr = state.userDetails.likedUsers;
-        const users = state.usersList;
-        let matchUsers = [];
-        likedarr.forEach(likedId => {
-            users.forEach(user => {
-                if (user._id === likedId) {
-                    matchUsers[matchUsers.length] = user;
-                }
-            });
-        });
-        return matchUsers;
-    };
 
     const auth = React.useMemo(() => ({
         login: async (email, password) => {
@@ -119,9 +106,6 @@ export function rootReducer() {
                     dispatch(createAction('SET_DETAILS', userDetails[0]));
                     data = data.filter(d => d.email !== JSON.parse(user).email);
                     dispatch(createAction('SET_USERS', data));
-    
-                    let allMatch = matches();
-                    dispatch(createAction('SET_MATCHES', allMatch));
                 });
             }
             dispatch(createAction('SET_LOADING', false));
