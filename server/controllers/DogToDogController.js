@@ -136,7 +136,7 @@ class DogToDogController {
             if (obj.length == 0) throw { msg: "error" };
             obj = obj[0];
 
-            console.log(obj, req.body);
+            // console.log(obj, req.body);
 
             // if (req.body._id) obj._id = req.body._id;
             // if (req.body.email) obj.email = req.body.email;

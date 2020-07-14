@@ -15,13 +15,14 @@ export default function Home({ navigation }) {
     const state = React.useContext(UserContext);
     rootReducer();
     const matches = () => {
-        const likedarr = state.userDetails.likedUsers;
+        const liked = state.userDetails.likedUsers;
+        const likedBy = state.userDetails.likedBy;
         const users = state.usersList;
         let matchUsers = [];
-        likedarr.forEach(likedId => {
-            users.forEach(user => {
-                if (user._id === likedId) {
-                    matchUsers[matchUsers.length] = user;
+        liked.forEach(likedId => {
+            likedBy.forEach(likedById => {
+                if (likedById === likedId) {
+                    matchUsers[matchUsers.length] = users.find(user => user._id === likedId);
                 }
             });
         });
@@ -31,21 +32,38 @@ export default function Home({ navigation }) {
         setIndex((index + 1));
     }
     const onSwipedLeft = () => {
+        let toSave = true;
         if (state.usersList[index]) {
-            state.userDetails.dislikedUsers[state.userDetails.dislikedUsers.length] = state.usersList[index]._id;
+            state.userDetails.dislikedUsers.forEach(element => {
+                if (element === state.usersList[index]._id) {
+                    toSave = false;
+                }
+            });
+            if (toSave) {
+                state.userDetails.dislikedUsers[state.userDetails.dislikedUsers.length] = state.usersList[index]._id;
+            }
         }
     }
     const onSwipedRight = async () => {
+        let toSave = true;
         if (state.usersList[index]) {
-            state.userDetails.likedUsers[state.userDetails.likedUsers.length] = state.usersList[index]._id;
-            state.usersList[index].likedBy[state.usersList[index].likedBy.length] = state.userDetails._id;
-            await updateLikes(state.usersList[index].email, state.usersList[index].likedBy);
+            state.userDetails.likedUsers.forEach(element => {
+                if (element === state.usersList[index]._id) {
+                    toSave = false;
+                }
+            });
+            if (toSave) {
+                state.userDetails.likedUsers[state.userDetails.likedUsers.length] = state.usersList[index]._id;
+                state.usersList[index].likedBy[state.usersList[index].likedBy.length] = state.userDetails._id;
+                await updateLikes(state.usersList[index].email, state.usersList[index].likedBy);
+
+            }
         }
     }
     const matchesDB = async () => {
         try {
             await updateLikes(state.userDetails.email, state.userDetails.likedUsers, state.userDetails.dislikedUsers);
-            matches(); 
+            matches();
             navigation.navigate('Your Matches');
         } catch (e) {
             console.log(e)
@@ -83,6 +101,7 @@ export default function Home({ navigation }) {
                 }}
             />
         })
+
     }, [navigation, logout]);
 
     if (index < state.usersList.length) {
@@ -157,7 +176,7 @@ export default function Home({ navigation }) {
                     <View style={styles.Bcontainer}>
                         <Text style={styles.text}>We have no more friens for you please come back later</Text>
                         <TouchableOpacity style={styles.button}
-                            onPress={matches}>
+                            onPress={matchesDB}>
                             <Text style={styles.btntext}>Your Matches</Text>
                         </TouchableOpacity>
                     </View>

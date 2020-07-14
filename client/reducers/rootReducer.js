@@ -63,6 +63,16 @@ export function rootReducer() {
                 };
                 await AsyncStorage.setItem('user', JSON.stringify(user));
                 dispatch(createAction('SET_USER', user));
+                axios.get(`${BASE_URL}/api`, {
+                    headers: {
+                        Authorization: `bearer ${user.token}`,
+                    },
+                }).then(({ data }) => {
+                    userDetails = data.filter(d => d.email === user.email);
+                    dispatch(createAction('SET_DETAILS', userDetails[0]));
+                    data = data.filter(d => d.email !== user.email);
+                    dispatch(createAction('SET_USERS', data));
+                });
             } catch (e) {
                 console.log(e)
             }

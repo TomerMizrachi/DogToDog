@@ -3,7 +3,6 @@ import { StyleSheet, View, FlatList, Text, TouchableOpacity, Image, Button } fro
 import { IconButton } from './IconButton';
 import { AuthContext } from '../context/AuthContext';
 import { UserContext } from '../context/UserContext';
-// import { createAction } from '../config/createAction';
 
 export default function Matches({ navigation }) {
     const state = React.useContext(UserContext);
